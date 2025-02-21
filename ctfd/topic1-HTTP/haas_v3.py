@@ -4,7 +4,7 @@ import re
 session = requests.Session()
 session.cert = "../../z5437741.pem"
 
-WEBSITE = "https://haas-v3.quoccacorp.com"
+URL = "https://haas-v3.quoccacorp.com"
 
 def append_carriage_return(request: str) -> str:
     return '\n'.join(line + '\r' for line in request.split('\n'))
@@ -32,7 +32,7 @@ def find_flag_dfs(path: str, visited: set):
 
     visited.add(path)
     request = create_request(path)
-    response = session.post(WEBSITE, data={"requestBox": request})
+    response = session.post(URL, data={"requestBox": request})
     response_text = response.content.decode()
     print(response_text)
 
