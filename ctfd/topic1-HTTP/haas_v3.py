@@ -23,10 +23,10 @@ Connection: keep-alive
 """
     return append_carriage_return(request.format(path=path))
 
-PATH_PATTERN = r'<a href="([^"]+)">'
+LINK_PATTERN = r'href=["\']([^"\']*)["\']'
 FLAG_PATTERN = r"(COMP6443{.+?})"
 
-def find_flag_dfs(path: str, visited: set):
+def crawl_dfs(path: str, visited: set):
     if path in visited:
         return
 
@@ -41,9 +41,8 @@ def find_flag_dfs(path: str, visited: set):
         print("\n===== FLAG FOUND =====\n" * 10)
         return
 
-    matches = re.findall(PATH_PATTERN, response_text)
+    links = re.findall(LINK_PATTERN, response_text)
+    for link in links:
+        crawl_dfs(link, visited)
 
-    for match in matches:
-        find_flag_dfs(match, visited)
-
-find_flag_dfs("/", set())
+crawl_dfs("/", set())
