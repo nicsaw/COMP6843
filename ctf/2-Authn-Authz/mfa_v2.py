@@ -1,11 +1,12 @@
 import requests
+import os
 import re
 import base64
 import json
 import pyotp
 
 session = requests.Session()
-session.cert = "../../z5437741.pem"
+session.cert = os.path.join(os.path.dirname(__file__), "../../z5437741.pem")
 
 BASE_URL = "https://mfa-v2.quoccacorp.com"
 

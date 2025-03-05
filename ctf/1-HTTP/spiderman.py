@@ -1,9 +1,10 @@
 import requests
+import os
 import re
 from urllib.parse import urljoin
 
 session = requests.Session()
-session.cert = "../../z5437741.pem"
+session.cert = os.path.join(os.path.dirname(__file__), "../../z5437741.pem")
 
 URL = "https://spiderman.quoccacorp.com"
 LINK_PATTERN = r'href=["\']([^"\']*)["\']'

