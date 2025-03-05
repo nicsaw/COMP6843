@@ -8,10 +8,10 @@ session.cert = "../../z5437741.pem"
 
 BASE_URL = "https://support.quoccacorp.com"
 NEW_TICKET_URL = f"{BASE_URL}/new"
-FLAG_PATTERN = r"(COMP6443{.+?})"
 
-def find_flag(text: str):
-    if flag_match := re.search(FLAG_PATTERN, text):
+FLAG_PATTERN = r"(COMP6443{.+?})"
+def find_flag(text: str, flag_pattern=FLAG_PATTERN):
+    if flag_match := re.search(flag_pattern, text):
         flag = flag_match.group(1)
         print(f"\n🚩 FLAG FOUND 🚩\n{flag}" * 10)
         exit()
@@ -32,7 +32,7 @@ def main():
     # char_set = get_char_set()
     # print(f"{len(char_set) = }")
 
-    num1 = 1
+    num1 = 9400
     num2 = 1
     while True:
         url = BASE_URL + f"/raw/{generate_endpoint(num1, num2)}"
