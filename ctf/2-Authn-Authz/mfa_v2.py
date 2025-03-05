@@ -25,7 +25,7 @@ def main():
 
     token = session.cookies.get("session")
     token_header = token.split('.')[0]
-    token_header_padded = token_header + '=' * (len(token_header) % 4)
+    token_header_padded = token_header + '=' * (-len(token_header) % 4)
     token_header_decoded = base64.b64decode(token_header_padded).decode()
     token_header_json: dict[str, str] = json.loads(token_header_decoded)
 
