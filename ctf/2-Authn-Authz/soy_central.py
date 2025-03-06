@@ -1,23 +1,17 @@
-import requests
-import os
-import re
-import jwt
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-session = requests.Session()
-session.cert = os.path.join(os.path.dirname(__file__), "../../z5437741.pem")
+from utils import get_session, find_flag
+import jwt
 
 BASE_URL = "https://soycentral.quoccacorp.com"
 USERNAME = "grayons"
 PASSWORD = "ilovesoy22"
 
-FLAG_PATTERN = r"(COMP6443{.+?})"
-def find_flag(text: str, flag_pattern=FLAG_PATTERN):
-    if flag_match := re.search(flag_pattern, text):
-        flag = flag_match.group(1)
-        print(f"\n🚩 FLAG FOUND 🚩\n{flag}" * 10)
-        exit()
-
 def main():
+    session = get_session()
+
     session.post(
         BASE_URL + "/login",
         data={"user": USERNAME, "password": PASSWORD}
