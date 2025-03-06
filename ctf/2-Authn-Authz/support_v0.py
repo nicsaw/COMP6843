@@ -1,20 +1,13 @@
-import requests
-import os
-import re
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-session = requests.Session()
-session.cert = os.path.join(os.path.dirname(__file__), "../../z5437741.pem")
+from utils import get_session, find_flag
 
 BASE_URL = "https://support-v0.quoccacorp.com/raw/"
-FLAG_PATTERN = r"(COMP6443{.+?})"
-
-def find_flag(text: str):
-    if flag_match := re.search(FLAG_PATTERN, text):
-        flag = flag_match.group(1)
-        print(f"\n🚩 FLAG FOUND 🚩\n{flag}" * 10)
-        exit()
 
 def main():
+    session = get_session()
     i = 0
     urls_to_retry = []
     while True:
