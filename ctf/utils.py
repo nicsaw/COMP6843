@@ -10,8 +10,7 @@ def get_session() -> requests.Session:
     session = requests.Session()
     repo = git.Repo(".", search_parent_directories=True)
     repo_root = Path(repo.working_dir)
-    cert_path = repo_root / "z5437741.pem"
-    session.cert = str(cert_path)
+    session.cert = str(repo_root / "z5437741.pem")
     return session
 
 def find_flag(text: str, flag_pattern: str = FLAG_PATTERN):
