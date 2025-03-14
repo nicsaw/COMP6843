@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-
 from utils import get_session, find_flag
 
 BASE_URL = "https://payportal.quoccacorp.com"
