@@ -23,3 +23,6 @@ def find_flag(text: str, flag_pattern: str = FLAG_PATTERN):
         output_file = caller_path.with_name(f"{caller_path.stem}.flag.txt")
         with output_file.open("a") as f:
             f.write(f"{flag}\n")
+
+        return flag
+    return None
