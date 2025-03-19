@@ -11,11 +11,26 @@ class Challenge:
         self.stars = stars
         self.tags = tags
 
+    def get_category(self) -> str:
+        return self.category
+
+    def get_name(self) -> str:
+        return self.name
+
+    def get_points(self) -> int:
+        return self.points
+
+    def get_stars(self) -> int:
+        return self.stars
+
+    def get_tags(self) -> list[str]:
+        return self.tags
+
     def to_dict(self):
         return {
             "category": self.category,
             "name": self.name,
-            "value": self.points,
+            "points": self.points,
             "stars": self.stars,
             "tags": self.tags,
         }
@@ -28,10 +43,10 @@ class ChallengeBoardScraper:
         with open(html_filename) as f:
             self.soup = BeautifulSoup(f, "html.parser")
 
-    def is_hidden(element):
+    def is_hidden(self, element) -> bool:
         return "display: none" in element.get("style", "").lower()
 
-    def scrape(self):
+    def scrape(self) -> list[Challenge]:
         challenges = []
 
         for category_div in self.soup.find_all("div", class_="pt-5"):
@@ -60,7 +75,6 @@ class ChallengeBoardScraper:
         return challenges
 
 if __name__ == "__main__":
-    scraper = ChallengeBoardScraper()
-    challenges = scraper.scrape()
-    for challenge in challenges:
-        print(challenge)
+    for challenge in ChallengeBoardScraper().scrape():
+        if "Reportable" in challenge.get_tags() and "Topic 1" in challenge.category:
+            print(challenge.get_name())
