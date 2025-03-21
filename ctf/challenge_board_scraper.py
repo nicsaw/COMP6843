@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import re
+import os
 
 HTML_FILENAME = "challenges.html"
 
@@ -40,7 +41,8 @@ class Challenge:
 
 class ChallengeBoardScraper:
     def __init__(self, html_filename: str = HTML_FILENAME):
-        with open(html_filename) as f:
+        file_abs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), html_filename)
+        with open(file_abs_path) as f:
             self.soup = BeautifulSoup(f, "html.parser")
 
     def is_hidden(self, element) -> bool:
@@ -76,5 +78,5 @@ class ChallengeBoardScraper:
 
 if __name__ == "__main__":
     for challenge in ChallengeBoardScraper().scrape():
-        if "Reportable" in challenge.get_tags() and "Topic 1" in challenge.category:
+        if "Reportable" in challenge.get_tags() and "Topic 3" in challenge.category:
             print(challenge.get_name())
