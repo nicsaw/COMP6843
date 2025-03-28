@@ -172,5 +172,6 @@ cython_debug/
 
 # COMP6843
 *.pem
-*.flag.txt
+*.txt
 *.html
+*.json
