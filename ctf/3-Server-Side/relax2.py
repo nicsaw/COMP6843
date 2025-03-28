@@ -3,10 +3,11 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from utils import get_session, find_flag
 
+from relax1 import Solver as Relax1Solver
 from concurrent.futures import ThreadPoolExecutor
 
 BASE_URL = "https://relax.quoccacorp.com"
-RELAX1_FLAG = "COMP6443{K3EP_C4LM_N_R3L4X_ITS_TR1VI4L}"
+RELAX1_FLAG = Relax1Solver().main()
 
 ITEM_DARKMODE = "darkmode"
 ITEM_MEMO = "memo"
