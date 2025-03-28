@@ -9,3 +9,5 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 ```
+
+Download the mTLS Certificate (PEM format) from [https://ctfd.quoccacorp.com/settings/mtls-certificate?format=PEM](https://ctfd.quoccacorp.com/settings/mtls-certificate?format=PEM) and place it in the root directory of this repository.
