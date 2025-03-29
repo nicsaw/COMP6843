@@ -6,8 +6,8 @@ from utils import get_session, find_flag
 import jwt
 
 BASE_URL = "https://soycentral.quoccacorp.com"
-USERNAME = "grayons"
-PASSWORD = "ilovesoy22"
+USERNAME = "grayons"    # Found in HTML comments of https://soycentral.quoccacorp.com
+PASSWORD = "ilovesoy22" # Found in HTML comments of https://soycentral.quoccacorp.com
 ALGORITHM = "HS256"
 SECRETS_LIST_URL = "https://raw.githubusercontent.com/wallarm/jwt-secrets/refs/heads/master/jwt.secrets.list"
 
