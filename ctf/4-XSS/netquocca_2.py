@@ -10,7 +10,6 @@ class Solver:
         self.webhooksite_url = f"https://webhook.site/{self.webhooksite_uuid}"
         self.webhooksite_view_url = f"https://webhook.site/#!/view/{self.webhooksite_uuid}"
         self.webhooksite_requests_url = f"https://webhook.site/token/{self.webhooksite_uuid}/requests"
-        print(self.webhooksite_view_url)
 
     def get_webhooksite_uuid(self):
         response = self.session.post("https://webhook.site/token")
