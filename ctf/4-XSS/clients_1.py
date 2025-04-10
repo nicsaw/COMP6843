@@ -1,9 +1,7 @@
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from utils import get_session, find_flag, WebhookSite
-
-from bs4 import BeautifulSoup
+from utils import get_session, WebhookSite
 
 class Solver:
     def __init__(self):
@@ -47,6 +45,7 @@ class Solver:
 
         self.session.post(f"{BASE_URL}/create_user", data=new_user_data)
 
+        # from bs4 import BeautifulSoup
         # response = self.session.get(BASE_URL)
         # soup = BeautifulSoup(response.text, "html.parser")
         # top_row_dcreat_td_element = soup.find("td", style="display:none;")
