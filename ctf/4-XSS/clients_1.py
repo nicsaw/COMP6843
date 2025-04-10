@@ -54,7 +54,7 @@ class Solver:
 
         # Report Home Page to Admin
         self.session.post(f"{BASE_URL}/report")
-        self.webhooksite.find_flag()
+        self.webhooksite.find_flags()
 
 if __name__ == "__main__":
     Solver().main()

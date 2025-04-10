@@ -13,19 +13,37 @@ def get_session() -> requests.Session:
     session.cert = str(repo_root / "z5437741.pem")
     return session
 
-def find_flag(text: str, flag_pattern: str = FLAG_PATTERN):
+def get_caller_file_path() -> Path:
+    utils_py_path = Path(__file__).resolve()
+    for frame in inspect.stack():
+        caller_path = Path(frame.filename).resolve()
+        if caller_path != utils_py_path:
+            return caller_path
+
+def find_flag(text: str, flag_pattern: str = FLAG_PATTERN) -> str:
     if flag_match := re.search(flag_pattern, text):
         flag = flag_match.group(1)
         print(f"\n🚩 FLAG FOUND 🚩\n{flag}\n" * 10)
 
-        caller_frame = inspect.stack()[1]
-        caller_path = Path(caller_frame.filename)
-        output_file = caller_path.with_name(f"{caller_path.stem}.flag.txt")
-        with output_file.open("a") as f:
+        caller_path = get_caller_file_path()
+        output_file_path = caller_path.with_name(f"{caller_path.stem}.flag.txt")
+        with output_file_path.open('a') as f:
             f.write(f"{flag}\n")
 
         return flag
-    return None
+
+def find_flags(text: str, flag_pattern: str = FLAG_PATTERN) -> list[str]:
+    if matches := re.findall(flag_pattern, text):
+        flags = list(set(matches))
+        print(f"\n🚩 FLAGS FOUND 🚩\n{'\n'.join(flags)}\n" * 10)
+
+        caller_path = get_caller_file_path()
+        output_file_path = caller_path.with_name(f"{caller_path.stem}.flag.txt")
+        with output_file_path.open('a') as f:
+            for flag in flags:
+                f.write(f"{flag}\n")
+
+        return flags
 
 class WebhookSite:
     def __init__(self):
@@ -53,7 +71,7 @@ class WebhookSite:
         uuid = uuid if uuid else self.uuid
         return f"https://webhook.site/token/{uuid}/requests"
 
-    def find_flag(self, max_attempts=5, delay_seconds=1, uuid: str = None) -> str | None:
+    def find_flags(self, max_attempts=5, delay_seconds=1, uuid: str = None) -> list[str] | None:
         import time, json
         for _ in range(max_attempts):
             time.sleep(delay_seconds)
@@ -61,4 +79,4 @@ class WebhookSite:
             response_json = response.json()
             if response_json["data"]:
                 response_json_text = json.dumps(response_json, indent=2)
-                return find_flag(response_json_text)
+                return find_flags(response_json_text)
