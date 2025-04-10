@@ -26,3 +26,39 @@ def find_flag(text: str, flag_pattern: str = FLAG_PATTERN):
 
         return flag
     return None
+
+class WebhookSite:
+    def __init__(self):
+        self.token = self.create_token()
+        self.uuid = self.get_uuid()
+        self.url = self.get_url(self.uuid)
+        self.view_url = self.get_view_url(self.uuid)
+        self.requests_url = self.get_requests_url(self.uuid)
+
+    def create_token(self) -> dict:
+        return requests.post("https://webhook.site/token").json()
+
+    def get_uuid(self) -> str:
+        return self.token["uuid"]
+
+    def get_url(self, uuid: str = None) -> str:
+        uuid = uuid if uuid else self.uuid
+        return f"https://webhook.site/{uuid}"
+
+    def get_view_url(self, uuid: str = None) -> str:
+        uuid = uuid if uuid else self.uuid
+        return f"https://webhook.site/#!/view/{uuid}"
+
+    def get_requests_url(self, uuid: str = None) -> str:
+        uuid = uuid if uuid else self.uuid
+        return f"https://webhook.site/token/{uuid}/requests"
+
+    def find_flag(self, max_attempts=3, delay_seconds=1, uuid: str = None) -> str | None:
+        import time, json
+        for _ in range(max_attempts):
+            time.sleep(delay_seconds)
+            response = requests.get(self.get_requests_url(uuid))
+            response_json = response.json()
+            if response_json["data"]:
+                response_json_text = json.dumps(response_json, indent=2)
+                return find_flag(response_json_text)
