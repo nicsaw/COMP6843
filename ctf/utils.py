@@ -53,7 +53,7 @@ class WebhookSite:
         uuid = uuid if uuid else self.uuid
         return f"https://webhook.site/token/{uuid}/requests"
 
-    def find_flag(self, max_attempts=3, delay_seconds=1, uuid: str = None) -> str | None:
+    def find_flag(self, max_attempts=5, delay_seconds=1, uuid: str = None) -> str | None:
         import time, json
         for _ in range(max_attempts):
             time.sleep(delay_seconds)
