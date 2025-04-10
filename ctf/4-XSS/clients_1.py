@@ -13,13 +13,15 @@ class Solver:
         self.webhooksite_view_url = f"https://webhook.site/#!/view/{self.webhooksite_uuid}"
         self.webhooksite_requests_url = f"https://webhook.site/token/{self.webhooksite_uuid}/requests"
 
-    def find_flag_webhooksite(self, delay_seconds=2):
+    def find_flag_webhooksite(self, max_attempts=3, delay_seconds=1):
         import time, json
-        time.sleep(delay_seconds)
-        response = self.session.get(self.webhooksite_requests_url)
-        response_json = response.json()
-        response_json_text = json.dumps(response_json, indent=2)
-        find_flag(response_json_text)
+        for _ in range(max_attempts):
+            time.sleep(delay_seconds)
+            response = self.session.get(self.webhooksite_requests_url)
+            response_json = response.json()
+            if response_json["data"]:
+                response_json_text = json.dumps(response_json, indent=2)
+                return find_flag(response_json_text)
 
     def generate_random_string(self, length = 10):
         import random, string
