@@ -3,8 +3,11 @@ import git
 from pathlib import Path
 import re
 import inspect
+import subprocess
+import paramiko
 
 FLAG_PATTERN = r"(COMP6443{.+?})"
+ZID = "z5437741"
 
 def get_session() -> requests.Session:
     session = requests.Session()
@@ -80,3 +83,87 @@ class WebhookSite:
             if response_json["data"]:
                 response_json_text = json.dumps(response_json, indent=2)
                 return find_flags(response_json_text)
+
+class CloudflareTunnel:
+    def __init__(self, local_port=8000):
+        self.local_port = local_port
+        self.public_url = None
+        self.process = None
+
+    def start(self) -> str:
+        LOCALHOST = "127.0.0.1"
+        command = ["cloudflared", "tunnel", "--url", f"http://{LOCALHOST}:{self.local_port}"]
+        self.process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+
+        return self._get_public_url()
+
+    def _get_public_url(self) -> str:
+        for line in self.process.stdout:
+            print(line)
+            if match := re.search(r"(https://[a-zA-Z0-9\-]+\.trycloudflare\.com)", line):
+                self.public_url = match.group(1)
+                return self.public_url
+
+    def get_public_url(self) -> str:
+        assert self.public_url
+        return self.public_url
+
+    def stop(self):
+        self.process.terminate()
+
+    def __del__(self):
+        self.stop()
+
+# https://taggi.cse.unsw.edu.au/FAQ/Hosting_services
+# https://taggi.cse.unsw.edu.au/FAQ/Creating_a_website
+class HostedWebsiteCSE:
+    def __init__(self, zid=ZID):
+        self.hostname = "cse.unsw.edu.au"
+        self.zid = zid
+
+        self.ssh = None
+        self.sftp = None
+
+    def connect(self):
+        self.ssh = paramiko.SSHClient()
+        self.ssh.load_system_host_keys()
+        self.ssh.connect(self.hostname, username=self.zid)
+
+        self.sftp = self.ssh.open_sftp()
+
+    def mkdir_p(self, dir_path: str):
+        parts = dir_path.strip("/").split("/")
+        path = ""
+        for part in parts:
+            path = f"{path}/{part}" if path else part
+            try:
+                self.sftp.stat(path)
+            except IOError:
+                self.sftp.mkdir(path)
+
+    def upload_file(self, filename: str, file_content: bytes) -> str:
+        assert self.sftp
+
+        caller_name = get_caller_file_path().stem
+        remote_dir = f"public_html/{caller_name}"
+        remote_path = f"{remote_dir}/{filename}"
+
+        self.mkdir_p(remote_dir)
+
+        with self.sftp.file(remote_path, 'w') as remote_file:
+            remote_file.write(file_content)
+
+        # self.sftp.chmod(remote_path, 0o755)
+        return f"https://{self.zid}.web.cse.unsw.edu.au/{caller_name}/{filename}"
+
+    def close(self):
+        if self.sftp: self.sftp.close()
+        if self.ssh: self.ssh.close()
+
+    def __del__(self):
+        self.close()
