@@ -146,15 +146,19 @@ class HostedWebsiteCSE:
             except IOError:
                 self.sftp.mkdir(path)
 
-    def upload_file(self, filename: str, file_content: bytes) -> str:
+    def upload_file(self, filename: str, file_content: bytes, write_to_root=False) -> str:
         """
         Returns:
             str: Public URL of uploaded file
         """
         assert self.sftp
 
-        caller_name = get_caller_file_path().stem
-        remote_dir = f"public_html/{caller_name}"
+        if write_to_root:
+            remote_dir = "public_html"
+        else:
+            caller_name = get_caller_file_path().stem
+            remote_dir = f"public_html/{caller_name}"
+
         remote_path = f"{remote_dir}/{filename}"
 
         self.mkdir_p(remote_dir)
@@ -163,6 +167,9 @@ class HostedWebsiteCSE:
             remote_file.write(file_content)
 
         # self.sftp.chmod(remote_path, 0o755)
+
+        if write_to_root:
+            return f"https://{self.zid}.web.cse.unsw.edu.au/{filename}"
         return f"https://{self.zid}.web.cse.unsw.edu.au/{caller_name}/{filename}"
 
     def close(self):

