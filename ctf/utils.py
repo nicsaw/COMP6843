@@ -147,6 +147,10 @@ class HostedWebsiteCSE:
                 self.sftp.mkdir(path)
 
     def upload_file(self, filename: str, file_content: bytes) -> str:
+        """
+        Returns:
+            str: Public URL of uploaded file
+        """
         assert self.sftp
 
         caller_name = get_caller_file_path().stem
