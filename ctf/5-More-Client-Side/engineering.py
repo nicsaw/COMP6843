@@ -17,7 +17,7 @@ class Solver:
         self.hosted_website.connect()
 
     # Recon. Example: https://engineering.quoccacorp.com/posts/f6e357b7-eb71-4fbc-b518-3aa696d667c5
-    def get_blog_post_html(self):
+    def get_blog_post_dom(self):
         response = self.session.get(BASE_URL)
         soup = BeautifulSoup(response.text, "html.parser")
         blog_post_root_relative_path = soup.find_all('a', href=True)[-1]
