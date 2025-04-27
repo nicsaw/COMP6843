@@ -74,6 +74,11 @@ class WebhookSite:
         uuid = uuid if uuid else self.uuid
         return f"https://webhook.site/token/{uuid}/requests"
 
+    def get_requests_json(self, uuid: str = None) -> dict:
+        uuid = uuid if uuid else self.uuid
+        response = requests.get(self.get_requests_url(uuid))
+        return response.json()
+
     def find_flags(self, max_attempts=5, delay_seconds=1, uuid: str = None) -> list[str] | None:
         import time, json
         for _ in range(max_attempts):
