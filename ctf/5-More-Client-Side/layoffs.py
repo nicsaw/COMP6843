@@ -55,6 +55,7 @@ style="
 position: absolute;
 bottom: -235px;
 right: 0;
+opacity: 50%;
 "></iframe>'''
 
         self.make_comment(PAYLOAD)
