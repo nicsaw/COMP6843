@@ -18,7 +18,10 @@ class Solver:
         # code src/app.py
         # SUPER_SECRET_PASSWORD = "MISCHIEF_MANAGED"
 
-        response = self.session.post(f"{BASE_URL}/login", data={"username": "admin", "password": "MISCHIEF_MANAGED"})
+        response = self.session.post(f"{BASE_URL}/login", data={
+            "username": "admin",
+            "password": "MISCHIEF_MANAGED"
+        })
         find_flag(response.text)
 
 if __name__ == "__main__":
