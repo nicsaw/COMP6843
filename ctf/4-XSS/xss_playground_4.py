@@ -12,6 +12,8 @@ class Solver:
         self.session = get_session()
         self.webhooksite = WebhookSite()
 
+    # https://xss-playground-4.quoccacorp.com/assets/index-DzvJf6sH.js
+    # Find "redirectAfterLogin"
     def get_js_bundle_url(self) -> str:
         from bs4 import BeautifulSoup
         response = self.session.get(BASE_URL, allow_redirects=False)
