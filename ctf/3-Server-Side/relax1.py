@@ -13,9 +13,8 @@ class Solver:
 
     def get_base64_wallet_value(self, target_balance: int) -> str:
         num_bytes = (target_balance.bit_length() + 7) // 8 or 1
-        quoccabucks_bytes = target_balance.to_bytes(num_bytes)
-        base64_encoded = base64.b64encode(quoccabucks_bytes)
-        return base64_encoded.decode()
+        target_balance_bytes = target_balance.to_bytes(num_bytes, byteorder="little")
+        return base64.b64encode(target_balance_bytes).decode()
 
     def main(self):
         value = self.get_base64_wallet_value(2 ** 9999)
