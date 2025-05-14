@@ -1,0 +1,43 @@
+# COMP6[48]43 Final Exam
+
+Do NOT modify the heading structure of this markdown file.
+
+i.e. do not change the existing or create new lines of text starting with `#` or `=` (code comments within backtick (`) delimited code blocks are fine).
+
+Write your answer/writeup for each question under the corresponding heading. For challenges, if you find the flag, include the flag in full at the end of your writeup.
+
+This file should be submitted to Moodle as a text (.txt) file. If you submit other formats, including PDF, Rich Text (.rtf) or Word Document (.docx, .doc, etc.), the file will be converted to a text file and you will not receive the bonus marks for following instructions.
+
+Following the above instructions correctly will gain you two bonus marks (capped at 100% marks). All questions are marked out of 5 and each part of the exam is weighted equally, even though they have a different number of questions.
+
+You are welcome (but not required) to use markdown formatting (see https://www.markdownguide.org/cheat-sheet/). You must still submit a plain text file regardless of if you use markdown formatting.
+
+## Question A1
+
+## Question A2
+
+## Question A3
+
+## Question A4
+
+## Question A5
+
+## Question A6
+
+## Question B1
+
+## Question B2
+
+## Question B3
+
+## Question B4
+
+## Question B5
+
+## Question C1
+
+## Question C2
+
+## Question C3
+
+## Question C4
